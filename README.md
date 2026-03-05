@@ -1,80 +1,91 @@
 # Data Cleaner Pro – Web App
 
-Web app Streamlit per pulire rapidamente file CSV ed Excel e scaricare i dati puliti in vari formati (JSON, CSV, XLSX).
+Web app Streamlit per pulire rapidamente file CSV ed Excel e scaricare i dati puliti in vari formati (JSON, CSV, XLSX).[file:2]
 
-## Cos'è e a cosa serve
+---
 
-Questo progetto è una **web app interattiva** sviluppata in Python con Streamlit che permette di:
+## 1. Cos'è e a cosa serve
 
-- caricare un file di dati “sporco” (CSV o Excel)  
-- visualizzare un’anteprima delle prime righe  
-- applicare una serie di pulizie di base  
-- scaricare il risultato pulito in più formati.
+Questo progetto è una **webapp interattiva** sviluppata in Python con Streamlit che ti permette di:
+- caricare un file di dati “sporco” (CSV o Excel)
+- visualizzare un’anteprima delle prime righe
+- applicare una serie di pulizie di base
+- scaricare il risultato pulito in JSON, CSV o XLSX.[file:2]
 
-È pensata per chi lavora spesso con file esportati da gestionali, e-commerce, CRM o altri sistemi che generano CSV/Excel pieni di righe vuote, duplicati o spazi indesiderati.
+È pensata per chi lavora spesso con file esportati da gestionali, marketplace, CRM o altri sistemi che generano CSV/Excel pieni di righe vuote, duplicati o spazi indesiderati.
 
-## Cosa fa il codice
+---
 
-A partire dal file `appDC.py` l’app:
+## 2. Cosa fa il codice
 
-1. Imposta la pagina Streamlit con titolo **“Data Cleaner Pro”** e layout *wide*. [file:2]  
-2. Mostra una sidebar dove puoi scegliere il **formato di esportazione**: `JSON`, `CSV` o `XLSX`. [file:2]  
-3. Permette di **caricare un file** tramite `st.file_uploader`, accettando estensioni `csv`, `xlsx`, `xls`. [file:2]  
-4. Se il file è CSV, lo legge con `pandas.read_csv` usando `;` come separatore; altrimenti usa `pandas.read_excel`. [file:2]  
-5. Visualizza un’**anteprima** delle prime 10 righe del dataset originale. [file:2]  
-6. Quando clicchi su “✨ Pulisci i Dati”, esegue queste pulizie sul DataFrame: [file:2]  
-   - copia i dati originali  
-   - rimuove spazi iniziali/finali dai nomi colonna  
-   - elimina le righe completamente vuote (`dropna(how='all')`)  
-   - elimina i duplicati (`drop_duplicates()`)  
-   - rimuove spazi iniziali/finali da tutte le celle di tipo stringa (`applymap` con `strip`)  
-7. Mostra un messaggio di successo e un’anteprima delle prime 10 righe dei **dati puliti**. [file:2]  
-8. In base al formato scelto nella sidebar, prepara il download: [file:2]  
-   - **JSON**: esporta con `df_clean.to_json(orient='records', indent=4, force_ascii=False)` e fornisce un pulsante “Scarica JSON”.  
-   - **CSV**: esporta con `df_clean.to_csv(index=False, sep=';')` codificato in `utf-8-sig` e fornisce “Scarica CSV”.  
-   - **XLSX**: usa un buffer `io.BytesIO()` e `pandas.ExcelWriter` con engine `openpyxl` per salvare il foglio *Dati Puliti*, poi fornisce “Scarica XLSX”.  
+Nel file `appDC.py` l’app esegue questi passaggi principali:[file:2]
 
-## Tipi di file che può manipolare
+1. Imposta la pagina Streamlit con titolo “Data Cleaner Pro” e layout wide.
+2. Mostra una sidebar con la scelta del **formato di esportazione**: `JSON`, `CSV`, `XLSX`.
+3. Permette di caricare un file tramite `st.file_uploader`, accettando estensioni `csv`, `xlsx`, `xls`.
+4. Se il file è CSV, lo legge con `pandas.read_csv` usando `;` come separatore; altrimenti usa `pandas.read_excel`.
+5. Visualizza l’**anteprima** delle prime 10 righe del dataset originale (`st.dataframe(df.head(10))`).
+6. Quando clicchi su “✨ Pulisci i Dati”:
+   - copia il DataFrame originale
+   - rimuove spazi iniziali/finali dai nomi colonna
+   - elimina le righe completamente vuote (`dropna(how='all')`)
+   - elimina i duplicati (`drop_duplicates()`)
+   - toglie spazi iniziali/finali da tutte le celle di tipo stringa (`applymap(lambda x: x.strip() ...)`).
+7. Mostra un messaggio di successo e l’anteprima dei **dati puliti** (`df_clean.head(10)`).
+8. In base al formato scelto:
+   - **JSON**: `df_clean.to_json(orient='records', indent=4, force_ascii=False)` e pulsante `Scarica JSON`
+   - **CSV**: `df_clean.to_csv(index=False, sep=';').encode('utf-8-sig')` e pulsante `Scarica CSV`
+   - **XLSX**: usa `io.BytesIO()` e `pandas.ExcelWriter(engine='openpyxl')` per creare `data_clean.xlsx` scaricabile.[file:2]
 
-In input:
+---
 
-- File **CSV** (`.csv`) con separatore `;`  
-- File **Excel** (`.xlsx`, `.xls`)
+## 3. Tipi di file supportati
 
-In output:
+**Input:**
+- CSV (`.csv`) con separatore `;`
+- Excel (`.xlsx`, `.xls`).[file:2]
 
-- **JSON** (`data_clean.json`), record-orientato  
-- **CSV** (`data_clean.csv`) con separatore `;`  
-- **XLSX** (`data_clean.xlsx`) con un foglio chiamato “Dati Puliti”  
+**Output:**
+- JSON (`data_clean.json`) – record orientato
+- CSV (`data_clean.csv`) – separatore `;`
+- XLSX (`data_clean.xlsx`) – foglio “Dati Puliti”.[file:2]
 
-Tutti i formati di output sono generati a partire dal DataFrame pulito creato in memoria. [file:2]
+---
 
-## Linguaggi e librerie usati
+## 4. Linguaggi e librerie
 
-- **Linguaggio**: Python  
-- **Librerie principali**: [file:2]  
-  - `streamlit` – interfaccia web e caricamento file  
-  - `pandas` – lettura, manipolazione e pulizia dei dati  
-  - `openpyxl` – salvataggio dei dati puliti in formato Excel (tramite `pandas.ExcelWriter`)  
-  - `io` – gestione buffer in memoria per la creazione del file XLSX
+- **Linguaggio:** Python
+- **Librerie principali:**[file:2]
+  - `streamlit` – interfaccia web, layout, caricamento file
+  - `pandas` – lettura, manipolazione e pulizia dei dati
+  - `openpyxl` – scrittura file Excel tramite `pandas.ExcelWriter`
+  - `io` – buffer in memoria per la creazione del file XLSX
 
-## A chi può essere utile
+---
 
-Questa web app può essere utile a:
+## 5. A chi è utile
 
-- analisti dati che ricevono spesso CSV/Excel sporchi  
-- freelance che gestiscono esportazioni da marketplace, CRM, ERP, ecc.  
-- studenti o data enthusiast che vogliono un tool veloce per pulire dati prima di analizzarli  
-- chiunque non voglia scrivere codice ma abbia bisogno di una pulizia base ripetibile su file tabellari.
+Questa web app può servire a:
+- analisti dati che ricevono spesso CSV/Excel sporchi
+- freelance che gestiscono esportazioni da marketplace, CRM, ERP, ecc.
+- studenti o data enthusiast che vogliono un tool veloce per ripulire dati tabellari
+- chiunque non voglia scrivere codice ma abbia bisogno di una pulizia base ripetibile.
 
-## Installazione
+---
 
-Prerequisiti:
+## 6. Installazione (completa, passo per passo)
 
-- Python 3.9+ installato nel sistema  
+### 6.1. Prerequisiti
+
+- Python 3.9+ installato
 - `pip` disponibile nel PATH
+- Git installato (se vuoi clonare/gestire la repo da terminale).[web:3]
 
-1. Clona o scarica questa repository:
+---
+
+### 6.2. Clonare o scaricare il progetto
+
+Se la repository è su GitHub:
 
 ```bash
 git clone https://github.com/<TUO_USERNAME>/data-cleaner-pro-webapp.git
